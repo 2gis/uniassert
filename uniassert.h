@@ -40,11 +40,21 @@
 #	define UNI_ASSERT UNI_SYSTEM_ASSERT
 #endif
 
+#if defined(__clang__)
+#	if __has_feature(attribute_analyzer_noreturn)
+#		define UNI_ANALYZER_NORETURN __attribute__((analyzer_noreturn))
+#	else
+#		define UNI_ANALYZER_NORETURN
+#	endif
+#else
+#	define UNI_ANALYZER_NORETURN
+#endif
+
 #ifdef UNI_ASSERTION_HANDLER_DEFINED
 namespace uniassert
 {
 
-void assertion_failed(char const *assertion, char const *file, char const *function, int line);
+void assertion_failed(char const *assertion, char const *file, char const *function, int line) UNI_ANALYZER_NORETURN;
 
 } // namespace uniassert
 #endif
