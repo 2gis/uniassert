@@ -70,7 +70,7 @@ inline void unused(const T &) {}
 } // namespace uniassert_private
 } // namespace uniassert
 
-#define UNI_UNUSED(x) ::uniassert::uniassert_private::unused(x);
+#define UNI_UNUSED(x) ::uniassert::uniassert_private::unused(x)
 
 #define PRIVATE_UNI_ABEGIN do {
 
@@ -88,7 +88,7 @@ inline void unused(const T &) {}
 	PRIVATE_UNI_ABEGIN \
 		bool __uni_cond_val = !!(expr); \
 		UNI_ASSERT(__uni_cond_val && #expr); \
-		UNI_UNUSED(__uni_cond_val) \
+		UNI_UNUSED(__uni_cond_val); \
 	PRIVATE_UNI_AEND
 
 #define PRIVATE_UNI_ENSURE(expr, fault_action) \
