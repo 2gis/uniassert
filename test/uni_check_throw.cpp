@@ -55,7 +55,7 @@ TEST_F(UniThrowTest, ShouldNotFailIfConditionIsTrue)
 	const auto func =
 		[]
 		{
-			UNI_THROW_IF(true, "error");
+			UNI_CHECK_THROW(true, "error");
 		};
 
 	try
@@ -74,7 +74,7 @@ TEST_F(UniThrowTest, ShouldNotFailIfConditionIsFalse)
 	const auto func =
 		[]
 		{
-			UNI_THROW_IF(false, "error");
+			UNI_CHECK_THROW(false, "error");
 		};
 
 	try
@@ -93,7 +93,7 @@ TEST_F(UniThrowTest, ShouldNotThrowIfConditionIsTrue)
 	const auto func =
 		[]
 		{
-			UNI_THROW_IF(true, "error");
+			UNI_CHECK_THROW(true, "error");
 		};
 
 	EXPECT_NO_THROW(func());
@@ -104,7 +104,7 @@ TEST_F(UniThrowTest, ShouldThrowIfConditionIsFalse)
 	const auto func =
 		[]
 		{
-			UNI_THROW_IF(false, "error");
+			UNI_CHECK_THROW(false, "error");
 		};
 
 	EXPECT_ANY_THROW(func());
@@ -115,7 +115,7 @@ TEST_F(UniThrowTest, ShouldThrowRuntimeErrorIfConditionIsFalse)
 	const auto func =
 		[]
 		{
-			UNI_THROW_IF(false, "error");
+			UNI_CHECK_THROW(false, "error");
 		};
 
 	EXPECT_THROW(func(), ::std::runtime_error);
@@ -126,7 +126,7 @@ TEST_F(UniThrowTest, ShouldThrowRuntimeErrorWithCorrectTextIfConditionIsFalse)
 	const auto func =
 		[]
 		{
-			UNI_THROW_IF(false, "error");
+			UNI_CHECK_THROW(false, "error");
 		};
 
 	try
@@ -148,7 +148,7 @@ TEST_F(UniThrowTest, ExtendedVersionShouldNotFailIfConditionIsTrue)
 	const auto func =
 		[]
 		{
-			UNI_THROW_IF(true, "error");
+			UNI_CHECK_THROW(true, "error");
 		};
 
 	try
@@ -167,7 +167,7 @@ TEST_F(UniThrowTest, ExtendedVersionShouldNotFailIfConditionIsFalse)
 	const auto func =
 		[]
 		{
-			UNI_THROW_IF(false, "error");
+			UNI_CHECK_THROW(false, "error");
 		};
 
 	try
@@ -186,7 +186,7 @@ TEST_F(UniThrowTest, ExtendedVersionShouldNotThrowIfConditionIsTrue)
 	const auto func =
 		[]
 		{
-			UNI_THROW_IF(true, "error");
+			UNI_CHECK_THROW(true, "error");
 		};
 
 	EXPECT_NO_THROW(func());
@@ -197,7 +197,7 @@ TEST_F(UniThrowTest, ExtendedVersionShouldThrowIfConditionIsFalse)
 	const auto func =
 		[]
 		{
-			UNI_THROW_IF(false, "error");
+			UNI_CHECK_THROW(false, "error");
 		};
 
 	EXPECT_ANY_THROW(func());
@@ -208,7 +208,7 @@ TEST_F(UniThrowTest, ShouldThrowSelectedExceptionIfConditionIsFalse)
 	const auto func =
 		[]
 		{
-			UNI_THROW_IF(false, TestException, "error");
+			UNI_CHECK_THROW(false, TestException, "error");
 		};
 
 	EXPECT_THROW(func(), TestException);
@@ -219,7 +219,7 @@ TEST_F(UniThrowTest, ShouldThrowSelectedExceptionWithCorrectTextIfConditionIsFal
 	const auto func =
 		[]
 		{
-			UNI_THROW_IF(false, TestException, "error");
+			UNI_CHECK_THROW(false, TestException, "error");
 		};
 
 	try

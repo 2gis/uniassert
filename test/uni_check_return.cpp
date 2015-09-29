@@ -54,7 +54,7 @@ TEST_F(UniReturnTest, ShouldNotFailIfConditionIsTrue)
 	const auto func =
 		[]
 		{
-			UNI_RETURN_IF(true);
+			UNI_CHECK_RETURN(true);
 		};
 
 	func();
@@ -67,7 +67,7 @@ TEST_F(UniReturnTest, ShouldNotFailIfConditionIsFalse)
 	const auto func =
 		[]
 		{
-			UNI_RETURN_IF(false);
+			UNI_CHECK_RETURN(false);
 		};
 
 	func();
@@ -82,7 +82,7 @@ TEST_F(UniReturnTest, ShouldNotReturnIfConditionIsTrue)
 	const auto func =
 		[&returned]
 		{
-			UNI_RETURN_IF(true);
+			UNI_CHECK_RETURN(true);
 			returned = false;
 		};
 
@@ -98,7 +98,7 @@ TEST_F(UniReturnTest, ShouldReturnIfConditionIsFalse)
 	const auto func =
 		[&returned]
 		{
-			UNI_RETURN_IF(false);
+			UNI_CHECK_RETURN(false);
 			returned = false;
 		};
 
@@ -112,7 +112,7 @@ TEST_F(UniReturnTest, ExtendedVersionShouldNotFailIfConditionIsTrue)
 	const auto func =
 		[]
 		{
-			UNI_RETURN_IF(true, true);
+			UNI_CHECK_RETURN(true, true);
 			return false;
 		};
 
@@ -126,7 +126,7 @@ TEST_F(UniReturnTest, ExtendedVersionShouldNotFailIfConditionIsFalse)
 	const auto func =
 		[]
 		{
-			UNI_RETURN_IF(false, true);
+			UNI_CHECK_RETURN(false, true);
 			return false;
 		};
 
@@ -140,7 +140,7 @@ TEST_F(UniReturnTest, ExtendedVersionShouldNotReturnIfConditionIsTrue)
 	const auto func =
 		[]
 		{
-			UNI_RETURN_IF(true, true);
+			UNI_CHECK_RETURN(true, true);
 			return false;
 		};
 
@@ -152,7 +152,7 @@ TEST_F(UniReturnTest, ExtendedVersionShouldReturnIfConditionIsFalse)
 	const auto func =
 		[]
 		{
-			UNI_RETURN_IF(false, true);
+			UNI_CHECK_RETURN(false, true);
 			return false;
 		};
 

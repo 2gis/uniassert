@@ -137,17 +137,17 @@ If both `UNI_FORCE_ASSERT` and `UNI_DISABLE_ASSERTS` are defined,
 ### Condition checks
 
 Single-line checks are useful even in general code. These macros don't use
-`UNI_ASSERT` and they do their action if `condition` **is** `true`.
+`UNI_ASSERT`.
 
-#### UNI_THROW_IF
+#### UNI_CHECK_THROW
 
-`UNI_THROW_IF(condition[, exception_type], message)`
+`UNI_CHECK_THROW(condition[, exception_type], message)`
 
 See `UNI_ENSURE_THROW`.
 
-#### UNI_RETURN_IF
+#### UNI_CHECK_RETURN
 
-`UNI_RETURN_IF(expr[, return_code])`
+`UNI_CHECK_RETURN(expr[, return_code])`
 
 See `UNI_ENSURE_RETURN`.
 
