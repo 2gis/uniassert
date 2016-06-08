@@ -1,21 +1,35 @@
+#include "undef.h"
+
 #include <uniassert/uniassert.h>
 
 #if !defined(NDEBUG)
-#	ifdef UNI_DISABLE_ASSERTS
-#		error "UNI_DISABLE_ASSERTS is defined in debug build"
+#	if defined(UNI_DISABLE_ASSERTS)
+#		error "UNI_DISABLE_ASSERTS is defined"
 #	endif
-#	ifndef UNI_SYSTEM_ASSERT
-#		error "UNI_SYSTEM_ASSERT is not defined in debug build"
+#	if !defined(UNI_ASSERTS_ENABLED)
+#		error "UNI_ASSERTS_ENABLED is not defined"
+#	endif
+#	if !defined(UNI_SYSTEM_ASSERT)
+#		error "UNI_SYSTEM_ASSERT is not defined"
 #	endif
 #else
-#	ifndef UNI_DISABLE_ASSERTS
-#		error "UNI_DISABLE_ASSERTS is not defined in release build"
+#	if !defined(UNI_DISABLE_ASSERTS)
+#		error "UNI_DISABLE_ASSERTS is not defined"
 #	endif
-#	ifdef UNI_SYSTEM_ASSERT
-#		error "UNI_SYSTEM_ASSERT is defined in release build"
+#	if defined(UNI_ASSERTS_ENABLED)
+#		error "UNI_ASSERTS_ENABLED is defined"
+#	endif
+#	if defined(UNI_SYSTEM_ASSERT)
+#		error "UNI_SYSTEM_ASSERT is defined"
 #	endif
 #endif
 
-#ifndef UNI_ASSERT
+#if defined(UNI_DYNAMIC_ASSERT_HANDLER_DEFINED)
+#	error "UNI_DYNAMIC_ASSERT_HANDLER_DEFINED is defined"
+#endif
+#if defined(UNI_STATIC_ASSERT_HANDLER_DEFINED)
+#	error "UNI_STATIC_ASSERT_HANDLER_DEFINED is defined"
+#endif
+#if !defined(UNI_ASSERT)
 #	error "UNI_ASSERT is not defined"
 #endif

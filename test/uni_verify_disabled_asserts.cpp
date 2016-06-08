@@ -1,7 +1,9 @@
 #include <functional>
 #include <gtest/gtest.h>
 
+#include "undef.h"
 #define UNI_DISABLE_ASSERTS
+
 #include <uniassert/uniassert.h>
 
 namespace uniassert

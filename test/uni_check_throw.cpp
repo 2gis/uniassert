@@ -1,29 +1,27 @@
-#include <functional>
 #include <gtest/gtest.h>
 
-#define UNI_FORCE_ASSERTS
-#define UNI_ENABLE_ASSERT_HANDLER
-#include <uniassert/uniassert.h>
+#include "test_exception.h"
 
-#include "assertion_failed_handler.h"
-#include "TestException.h"
+#include "undef.h"
+#define UNI_FORCE_ASSERTS
+#define UNI_ENABLE_DYNAMIC_ASSERT_HANDLER
+
+#include <uniassert/uniassert.h>
 
 namespace uniassert
 {
 namespace test
 {
 
-class UniThrowTest : public ::testing::Test
+class UniCheckThrowTest : public ::testing::Test
 {
 protected:
-	UniThrowTest()
+	UniCheckThrowTest()
+		: assert_handler_guard_(&UniCheckThrowTest::Assertion)
 	{
-		using namespace std::placeholders;
-		g_assertion_failed_handler = std::bind(&UniThrowTest::Assertion, this, _1, _2, _3, _4);
 	}
-	virtual ~UniThrowTest() override
+	virtual ~UniCheckThrowTest() override
 	{
-		g_assertion_failed_handler = nullptr;
 	}
 
 	virtual void SetUp() override
@@ -36,7 +34,7 @@ protected:
 	}
 
 private:
-	void Assertion(char const *assertion, char const *file, char const *function, int line)
+	static void Assertion(char const * assertion, char const * file, char const * function, int line)
 	{
 		UNI_UNUSED(assertion);
 		UNI_UNUSED(file);
@@ -47,10 +45,13 @@ private:
 	}
 
 protected:
-	bool failed_;
+	static bool failed_;
+	const assert_handler_guard assert_handler_guard_;
 };
 
-TEST_F(UniThrowTest, ShouldNotFailIfConditionIsTrue)
+bool UniCheckThrowTest::failed_ = false;
+
+TEST_F(UniCheckThrowTest, ShouldNotFailIfConditionIsTrue)
 {
 	const auto func =
 		[]
@@ -69,7 +70,7 @@ TEST_F(UniThrowTest, ShouldNotFailIfConditionIsTrue)
 	EXPECT_FALSE(failed_);
 }
 
-TEST_F(UniThrowTest, ShouldNotFailIfConditionIsFalse)
+TEST_F(UniCheckThrowTest, ShouldNotFailIfConditionIsFalse)
 {
 	const auto func =
 		[]
@@ -88,7 +89,7 @@ TEST_F(UniThrowTest, ShouldNotFailIfConditionIsFalse)
 	EXPECT_FALSE(failed_);
 }
 
-TEST_F(UniThrowTest, ShouldNotThrowIfConditionIsTrue)
+TEST_F(UniCheckThrowTest, ShouldNotThrowIfConditionIsTrue)
 {
 	const auto func =
 		[]
@@ -99,7 +100,7 @@ TEST_F(UniThrowTest, ShouldNotThrowIfConditionIsTrue)
 	EXPECT_NO_THROW(func());
 }
 
-TEST_F(UniThrowTest, ShouldThrowIfConditionIsFalse)
+TEST_F(UniCheckThrowTest, ShouldThrowIfConditionIsFalse)
 {
 	const auto func =
 		[]
@@ -110,7 +111,7 @@ TEST_F(UniThrowTest, ShouldThrowIfConditionIsFalse)
 	EXPECT_ANY_THROW(func());
 }
 
-TEST_F(UniThrowTest, ShouldThrowRuntimeErrorIfConditionIsFalse)
+TEST_F(UniCheckThrowTest, ShouldThrowRuntimeErrorIfConditionIsFalse)
 {
 	const auto func =
 		[]
@@ -121,7 +122,7 @@ TEST_F(UniThrowTest, ShouldThrowRuntimeErrorIfConditionIsFalse)
 	EXPECT_THROW(func(), ::std::runtime_error);
 }
 
-TEST_F(UniThrowTest, ShouldThrowRuntimeErrorWithCorrectTextIfConditionIsFalse)
+TEST_F(UniCheckThrowTest, ShouldThrowRuntimeErrorWithCorrectTextIfConditionIsFalse)
 {
 	const auto func =
 		[]
@@ -143,12 +144,12 @@ TEST_F(UniThrowTest, ShouldThrowRuntimeErrorWithCorrectTextIfConditionIsFalse)
 	}
 }
 
-TEST_F(UniThrowTest, ExtendedVersionShouldNotFailIfConditionIsTrue)
+TEST_F(UniCheckThrowTest, ExtendedVersionShouldNotFailIfConditionIsTrue)
 {
 	const auto func =
 		[]
 		{
-			UNI_CHECK_THROW(true, "error");
+			UNI_CHECK_THROW(true, test_exception, "error");
 		};
 
 	try
@@ -162,12 +163,12 @@ TEST_F(UniThrowTest, ExtendedVersionShouldNotFailIfConditionIsTrue)
 	EXPECT_FALSE(failed_);
 }
 
-TEST_F(UniThrowTest, ExtendedVersionShouldNotFailIfConditionIsFalse)
+TEST_F(UniCheckThrowTest, ExtendedVersionShouldNotFailIfConditionIsFalse)
 {
 	const auto func =
 		[]
 		{
-			UNI_CHECK_THROW(false, "error");
+			UNI_CHECK_THROW(false, test_exception, "error");
 		};
 
 	try
@@ -181,52 +182,52 @@ TEST_F(UniThrowTest, ExtendedVersionShouldNotFailIfConditionIsFalse)
 	EXPECT_FALSE(failed_);
 }
 
-TEST_F(UniThrowTest, ExtendedVersionShouldNotThrowIfConditionIsTrue)
+TEST_F(UniCheckThrowTest, ExtendedVersionShouldNotThrowIfConditionIsTrue)
 {
 	const auto func =
 		[]
 		{
-			UNI_CHECK_THROW(true, "error");
+			UNI_CHECK_THROW(true, test_exception, "error");
 		};
 
 	EXPECT_NO_THROW(func());
 }
 
-TEST_F(UniThrowTest, ExtendedVersionShouldThrowIfConditionIsFalse)
+TEST_F(UniCheckThrowTest, ExtendedVersionShouldThrowIfConditionIsFalse)
 {
 	const auto func =
 		[]
 		{
-			UNI_CHECK_THROW(false, "error");
+			UNI_CHECK_THROW(false, test_exception, "error");
 		};
 
 	EXPECT_ANY_THROW(func());
 }
 
-TEST_F(UniThrowTest, ShouldThrowSelectedExceptionIfConditionIsFalse)
+TEST_F(UniCheckThrowTest, ExtendedVersionShouldThrowSelectedExceptionIfConditionIsFalse)
 {
 	const auto func =
 		[]
 		{
-			UNI_CHECK_THROW(false, TestException, "error");
+			UNI_CHECK_THROW(false, test_exception, "error");
 		};
 
-	EXPECT_THROW(func(), TestException);
+	EXPECT_THROW(func(), test_exception);
 }
 
-TEST_F(UniThrowTest, ShouldThrowSelectedExceptionWithCorrectTextIfConditionIsFalse)
+TEST_F(UniCheckThrowTest, ExtendedVersionShouldThrowSelectedExceptionWithCorrectTextIfConditionIsFalse)
 {
 	const auto func =
 		[]
 		{
-			UNI_CHECK_THROW(false, TestException, "error");
+			UNI_CHECK_THROW(false, test_exception, "error");
 		};
 
 	try
 	{
 		func();
 	}
-	catch (const TestException &exception)
+	catch (const test_exception &exception)
 	{
 		EXPECT_STREQ("error", exception.what());
 	}

@@ -1,4 +1,6 @@
+#include "undef.h"
 #define UNI_FUNCTION 100500
+
 #include <uniassert/uniassert.h>
 
 #if !defined(UNI_FUNCTION)

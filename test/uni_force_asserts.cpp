@@ -6,19 +6,26 @@
 
 #include <uniassert/uniassert.h>
 
+#if defined(UNI_DISABLE_ASSERTS)
+#	error "UNI_DISABLE_ASSERTS is defined"
+#endif
+#if !defined(UNI_ASSERTS_ENABLED)
+#	error "UNI_ASSERTS_ENABLED is not defined"
+#endif
+
 namespace uniassert
 {
 namespace test
 {
 
-class UniVerifyEnabledAssertsTest : public ::testing::Test
+class UniForceAssertsTest : public ::testing::Test
 {
 protected:
-	UniVerifyEnabledAssertsTest()
-		: assert_handler_guard_(&UniVerifyEnabledAssertsTest::Assertion)
+	UniForceAssertsTest()
+		: assert_handler_guard_(&UniForceAssertsTest::Assertion)
 	{
 	}
-	virtual ~UniVerifyEnabledAssertsTest() override
+	virtual ~UniForceAssertsTest() override
 	{
 	}
 
@@ -47,23 +54,23 @@ protected:
 	const assert_handler_guard assert_handler_guard_;
 };
 
-bool UniVerifyEnabledAssertsTest::failed_ = false;
+bool UniForceAssertsTest::failed_ = false;
 
-TEST_F(UniVerifyEnabledAssertsTest, ShouldNotFailIfConditionIsTrue)
+TEST_F(UniForceAssertsTest, ShouldNotFailIfConditionIsTrue)
 {
-	UNI_VERIFY(true);
+	UNI_ASSERT(true);
 
 	EXPECT_FALSE(failed_);
 }
 
-TEST_F(UniVerifyEnabledAssertsTest, ShouldFailIfConditionIsFalse)
+TEST_F(UniForceAssertsTest, ShouldFailIfConditionIsFalse)
 {
-	UNI_VERIFY(false);
+	UNI_ASSERT(false);
 
 	EXPECT_TRUE(failed_);
 }
 
-TEST_F(UniVerifyEnabledAssertsTest, ShouldEvaluateCode)
+TEST_F(UniForceAssertsTest, ShouldEvaluateCode)
 {
 	bool called = false;
 	auto func =
@@ -73,12 +80,12 @@ TEST_F(UniVerifyEnabledAssertsTest, ShouldEvaluateCode)
 			return true;
 		};
 
-	UNI_VERIFY(func());
+	UNI_ASSERT(func());
 
 	EXPECT_TRUE(called);
 }
 
-TEST_F(UniVerifyEnabledAssertsTest, ShouldEvaluateCodeOnlyOnce)
+TEST_F(UniForceAssertsTest, ShouldEvaluateCodeOnlyOnce)
 {
 	unsigned called_times = 0;
 	auto func =
@@ -88,7 +95,7 @@ TEST_F(UniVerifyEnabledAssertsTest, ShouldEvaluateCodeOnlyOnce)
 			return true;
 		};
 
-	UNI_VERIFY(func());
+	UNI_ASSERT(func());
 
 	EXPECT_EQ(1u, called_times);
 }

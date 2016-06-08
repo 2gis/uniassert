@@ -3,12 +3,17 @@
 The uniassert library is a small collection of useful macros. Most of them are
 designed for assumption checks (and this is a reason behind the library name).
 
-This library was tested on gcc 4.8, gcc 4.9, clang 3.5 and MSVS 2013,
+This library was tested on gcc 4.8+, clang 3.5+ and MSVS 2013+,
 but will probably work on any c++ compiler with c++11 support.
 
 ## Assumption checks
 
 ### Using
+
+#### UNI_EMPTY_EXPRESSION
+
+This simple macro does nothing but requires trailing semicolon if is used as
+single statement.
 
 #### UNI_ASSERT
 
@@ -16,8 +21,26 @@ If you are familiar with `assert` from the standard library, `BOOST_ASSERT`
 from *boost* or `Q_ASSERT` from *Qt*, you already know how to use `UNI_ASSERT`.
 For all others we recommend to read Wikipedia article
 [Assertion (software development)](https://en.wikipedia.org/wiki/Assertion_%28software_development%29).
-By default `UNI_ASSERT` is equivalent to `assert` (or `_ASSERTE` for MSVS in
-most cases), but this behavior can be changed (see "Configuration" section).
+By default `UNI_ASSERT` defined as `UNI_EMPTY_EXPRESSION` if `NDEBUG` is
+defined (almost always true for **release** builds) or equal to `assert`
+otherwise (`_ASSERTE` for MSVS in most cases), but this behavior can be changed
+(see "Configuration" section).
+If `UNI_ASSERT` is not defined as `UNI_EMPTY_EXPRESSION` then
+`UNI_ASSERTS_ENABLED` macro is defined. You can use it for generating
+additional code for assumption checks (see example below).
+
+    #if defined(UNI_ASSERTS_ENABLED)
+    bool my_complex_check()
+    {
+        ...
+    }
+    #endif
+    
+    ...
+    
+    UNI_ASSERT(my_complex_check());
+    
+    ...
 
 You can use `UNI_ASSERT` in other macros but make sure that the expression is
 evaluated only once.
@@ -71,21 +94,49 @@ example below).
 In later examples we will provide code for the second case, but `uniassert.h`
 include will be skipped.
 
-#### UNI_ENABLE_ASSERT_HANDLER
+#### UNI_ENABLE_DYNAMIC_ASSERT_HANDLER
 
 It is possible to call an external function when an assumption check is failed.
-All you need is to define `UNI_ENABLE_ASSERT_HANDLER` and implement
+If you don't want to change assertion handler in runtime, define
+`UNI_ENABLE_STATIC_ASSERT_HANDLER` (see below). Otherwise you should define
+`UNI_ENABLE_DYNAMIC_ASSERT_HANDLER`.
+
+If both `UNI_ENABLE_DYNAMIC_ASSERT_HANDLER` and `UNI_ASSERTS_ENABLED` are
+defined then `UNI_DYNAMIC_ASSERT_HANDLER_DEFINED` is defined and you can use
+`uniassert::set_assert_handler` function to set new assertion handler and get
+the previous one.
+
+If no assertion handler is set (by default), `UNI_SYSTEM_ASSERT` macro will
+be used.
+
+There are two helper classes aimed to be used in unit tests to temporary change
+or disable current assertion handler: `assert_handler_guard` and
+`disable_asserts_guard`. These classes are always there if
+`UNI_ENABLE_DYNAMIC_ASSERT_HANDLER` is defined even when `UNI_ASSERTS_ENABLED`
+is not defined.
+
+#### UNI_ENABLE_STATIC_ASSERT_HANDLER
+
+It is possible to call an external function when an assumption check is failed.
+All you need is to define `UNI_ENABLE_STATIC_ASSERT_HANDLER` and implement
 `uniassert::assertion_failed` function somewhere else:
 
+    #if defined(UNI_STATIC_ASSERT_HANDLER_DEFINED)
     namespace uniassert
     {
 
-    void assertion_failed(char const *assertion, char const *file, char const *function, int line)
+    void assertion_failed(char const * assertion, char const * file, char const * function, int line)
     {
         // Something useful
     }
 
     } // namespace uniassert
+    #endif
+
+If `UNI_ENABLE_STATIC_ASSERT_HANDLER` and `UNI_ASSERTS_ENABLED` are defined and
+`UNI_ENABLE_DYNAMIC_ASSERT_HANDLER` is not defined then
+`UNI_STATIC_ASSERT_HANDLER_DEFINED` is defined. You can check it when defining
+function `uniassert::assertion_failed` (see example above).
 
 #### UNI_FUNCTION
 
@@ -106,7 +157,7 @@ can change this mapping by defining `UNI_SYSTEM_ASSERT`:
 
     #define UNI_SYSTEM_ASSERT YOUR_OWN_ASSERT
 
-If both `UNI_SYSTEM_ASSERT` and `UNI_ENABLE_ASSERT_HANDLER` are defined,
+If both `UNI_SYSTEM_ASSERT` and `UNI_ENABLE_STATIC_ASSERT_HANDLER` are defined,
 `UNI_SYSTEM_ASSERT` will be ignored.
 
 #### UNI_SYSTEM_ASSERT_HEADER
@@ -122,12 +173,19 @@ can also define `UNI_SYSTEM_ASSERT_HEADER`:
 You can disable `UNI_ASSERT` even for **debug** builds by defining
 `UNI_DISABLE_ASSERT`.
 
+If both `UNI_DISABLE_ASSERTS` and `UNI_ENABLE_STATIC_ASSERT_HANDLER` are
+defined, `UNI_ENABLE_STATIC_ASSERT_HANDLER` will be ignored.
+
+If both `UNI_DISABLE_ASSERTS` and `UNI_ENABLE_DYNAMIC_ASSERT_HANDLER` are
+defined, `UNI_ENABLE_DYNAMIC_ASSERT_HANDLER` will be ignored.
+
 #### UNI_FORCE_ASSERTS
 
 By default `UNI_ASSERT` does nothing if `NDEBUG` is defined (almost always
 true for **release** builds). This check can be disabled by defining
-`UNI_FORCE_ASSERTS`. You have to define either `UNI_SYSTEM_ASSERT` or
-`UNI_ENABLE_ASSERT_HANDLER`, otherwise `UNI_ASSERT` will still do nothing.
+`UNI_FORCE_ASSERTS`. You should probably define either `UNI_SYSTEM_ASSERT`,
+`UNI_ENABLE_DYNAMIC_ASSERT_HANDLER` or `UNI_ENABLE_STATIC_ASSERT_HANDLER`,
+otherwise internal macro can still do nothing.
 
 If both `UNI_FORCE_ASSERT` and `UNI_DISABLE_ASSERTS` are defined,
 `UNI_FORCE_ASSERTS` will be ignored.
@@ -152,6 +210,10 @@ See `UNI_ENSURE_THROW`.
 See `UNI_ENSURE_RETURN`.
 
 ### General macros
+
+#### UNI_EMPTY_EXPRESSION
+
+See `UNI_EMPTY_EXPRESSION` in "Assumption checks" section.
 
 #### UNI_UNUSED
 

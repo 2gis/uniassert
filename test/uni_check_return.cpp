@@ -1,28 +1,25 @@
-#include <functional>
 #include <gtest/gtest.h>
 
+#include "undef.h"
 #define UNI_FORCE_ASSERTS
-#define UNI_ENABLE_ASSERT_HANDLER
-#include <uniassert/uniassert.h>
+#define UNI_ENABLE_DYNAMIC_ASSERT_HANDLER
 
-#include "assertion_failed_handler.h"
+#include <uniassert/uniassert.h>
 
 namespace uniassert
 {
 namespace test
 {
 
-class UniReturnTest : public ::testing::Test
+class UniCheckReturnTest : public ::testing::Test
 {
 protected:
-	UniReturnTest()
+	UniCheckReturnTest()
+		: assert_handler_guard_(&UniCheckReturnTest::Assertion)
 	{
-		using namespace std::placeholders;
-		g_assertion_failed_handler = std::bind(&UniReturnTest::Assertion, this, _1, _2, _3, _4);
 	}
-	virtual ~UniReturnTest() override
+	virtual ~UniCheckReturnTest() override
 	{
-		g_assertion_failed_handler = nullptr;
 	}
 
 	virtual void SetUp() override
@@ -35,7 +32,7 @@ protected:
 	}
 
 private:
-	void Assertion(char const *assertion, char const *file, char const *function, int line)
+	static void Assertion(char const * assertion, char const * file, char const * function, int line)
 	{
 		UNI_UNUSED(assertion);
 		UNI_UNUSED(file);
@@ -46,10 +43,13 @@ private:
 	}
 
 protected:
-	bool failed_;
+	static bool failed_;
+	const assert_handler_guard assert_handler_guard_;
 };
 
-TEST_F(UniReturnTest, ShouldNotFailIfConditionIsTrue)
+bool UniCheckReturnTest::failed_ = false;
+
+TEST_F(UniCheckReturnTest, ShouldNotFailIfConditionIsTrue)
 {
 	const auto func =
 		[]
@@ -62,7 +62,7 @@ TEST_F(UniReturnTest, ShouldNotFailIfConditionIsTrue)
 	EXPECT_FALSE(failed_);
 }
 
-TEST_F(UniReturnTest, ShouldNotFailIfConditionIsFalse)
+TEST_F(UniCheckReturnTest, ShouldNotFailIfConditionIsFalse)
 {
 	const auto func =
 		[]
@@ -75,7 +75,7 @@ TEST_F(UniReturnTest, ShouldNotFailIfConditionIsFalse)
 	EXPECT_FALSE(failed_);
 }
 
-TEST_F(UniReturnTest, ShouldNotReturnIfConditionIsTrue)
+TEST_F(UniCheckReturnTest, ShouldNotReturnIfConditionIsTrue)
 {
 	bool returned = true;
 
@@ -91,7 +91,7 @@ TEST_F(UniReturnTest, ShouldNotReturnIfConditionIsTrue)
 	EXPECT_FALSE(returned);
 }
 
-TEST_F(UniReturnTest, ShouldReturnIfConditionIsFalse)
+TEST_F(UniCheckReturnTest, ShouldReturnIfConditionIsFalse)
 {
 	bool returned = true;
 
@@ -107,7 +107,7 @@ TEST_F(UniReturnTest, ShouldReturnIfConditionIsFalse)
 	EXPECT_TRUE(returned);
 }
 
-TEST_F(UniReturnTest, ExtendedVersionShouldNotFailIfConditionIsTrue)
+TEST_F(UniCheckReturnTest, ExtendedVersionShouldNotFailIfConditionIsTrue)
 {
 	const auto func =
 		[]
@@ -121,7 +121,7 @@ TEST_F(UniReturnTest, ExtendedVersionShouldNotFailIfConditionIsTrue)
 	EXPECT_FALSE(failed_);
 }
 
-TEST_F(UniReturnTest, ExtendedVersionShouldNotFailIfConditionIsFalse)
+TEST_F(UniCheckReturnTest, ExtendedVersionShouldNotFailIfConditionIsFalse)
 {
 	const auto func =
 		[]
@@ -135,7 +135,7 @@ TEST_F(UniReturnTest, ExtendedVersionShouldNotFailIfConditionIsFalse)
 	EXPECT_FALSE(failed_);
 }
 
-TEST_F(UniReturnTest, ExtendedVersionShouldNotReturnIfConditionIsTrue)
+TEST_F(UniCheckReturnTest, ExtendedVersionShouldNotReturnIfConditionIsTrue)
 {
 	const auto func =
 		[]
@@ -147,7 +147,7 @@ TEST_F(UniReturnTest, ExtendedVersionShouldNotReturnIfConditionIsTrue)
 	EXPECT_FALSE(func());
 }
 
-TEST_F(UniReturnTest, ExtendedVersionShouldReturnIfConditionIsFalse)
+TEST_F(UniCheckReturnTest, ExtendedVersionShouldReturnIfConditionIsFalse)
 {
 	const auto func =
 		[]

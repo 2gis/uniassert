@@ -1,34 +1,15 @@
+#include "undef.h"
 #define UNI_FORCE_ASSERTS
-#define UNI_SYSTEM_ASSERT(cond) ((!(cond)) \
-		? (uniassert::test::g_assertion_failed_handler(#cond, __FILE__, __FUNCTION__, __LINE__)) \
-		: ((void)0))
-#define UNI_SYSTEM_ASSERT_HEADER <uniassert/test/assertion_failed_handler.h>
+#define UNI_SYSTEM_ASSERT_HEADER "test/system_assert_header.h"
+
 #include <uniassert/uniassert.h>
 
-#include <gtest/gtest.h>
+#if !defined(UNI_TEST_SPECIAL_MACRO)
+#	error "UNI_SYSTEM_ASSERT_HEADER was not used"
+#endif
 
-namespace uniassert
-{
-namespace test
-{
-
-TEST(UniSystemAssertHandlerTest, ShouldCallSelectedFunction)
-{
-	bool function_called = false;
-	g_assertion_failed_handler =
-		[&function_called](char const *assertion, char const *file, char const *function, int line)
-		{
-			UNI_UNUSED(assertion);
-			UNI_UNUSED(file);
-			UNI_UNUSED(function);
-			UNI_UNUSED(line);
-
-			function_called = true;
-		};
-
-	UNI_ASSERT(false);
-	EXPECT_TRUE(function_called);
-}
-
-} // namespace test
-} // namespace uniassert
+#if !defined(UNI_ASSERT)
+#	error "UNI_ASSERT is not defined"
+#elif UNI_ASSERT != 1
+#	error "UNI_SYSTEM_ASSERT was not used"
+#endif

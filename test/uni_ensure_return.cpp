@@ -1,11 +1,10 @@
-#include <functional>
 #include <gtest/gtest.h>
 
+#include "undef.h"
 #define UNI_FORCE_ASSERTS
-#define UNI_ENABLE_ASSERT_HANDLER
-#include <uniassert/uniassert.h>
+#define UNI_ENABLE_DYNAMIC_ASSERT_HANDLER
 
-#include "assertion_failed_handler.h"
+#include <uniassert/uniassert.h>
 
 namespace uniassert
 {
@@ -16,13 +15,11 @@ class UniEnsureReturnTest : public ::testing::Test
 {
 protected:
 	UniEnsureReturnTest()
+		: assert_handler_guard_(&UniEnsureReturnTest::Assertion)
 	{
-		using namespace std::placeholders;
-		g_assertion_failed_handler = std::bind(&UniEnsureReturnTest::Assertion, this, _1, _2, _3, _4);
 	}
 	virtual ~UniEnsureReturnTest() override
 	{
-		g_assertion_failed_handler = nullptr;
 	}
 
 	virtual void SetUp() override
@@ -35,7 +32,7 @@ protected:
 	}
 
 private:
-	void Assertion(char const *assertion, char const *file, char const *function, int line)
+	static void Assertion(char const * assertion, char const * file, char const * function, int line)
 	{
 		UNI_UNUSED(assertion);
 		UNI_UNUSED(file);
@@ -46,8 +43,11 @@ private:
 	}
 
 protected:
-	bool failed_;
+	static bool failed_;
+	const assert_handler_guard assert_handler_guard_;
 };
+
+bool UniEnsureReturnTest::failed_ = false;
 
 TEST_F(UniEnsureReturnTest, ShouldNotFailIfConditionIsTrue)
 {

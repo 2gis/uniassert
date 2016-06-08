@@ -1,14 +1,16 @@
 #pragma once
 
+#include <string>
+
 namespace uniassert
 {
 namespace test
 {
 
-class TestException
+class test_exception
 {
 public:
-	TestException(const char *error_message)
+	test_exception(const char * error_message)
 		: error_(error_message)
 	{
 	}

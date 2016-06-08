@@ -1,12 +1,12 @@
-#include <functional>
 #include <gtest/gtest.h>
 
-#define UNI_FORCE_ASSERTS
-#define UNI_ENABLE_ASSERT_HANDLER
-#include <uniassert/uniassert.h>
+#include "test_exception.h"
 
-#include "assertion_failed_handler.h"
-#include "TestException.h"
+#include "undef.h"
+#define UNI_FORCE_ASSERTS
+#define UNI_ENABLE_DYNAMIC_ASSERT_HANDLER
+
+#include <uniassert/uniassert.h>
 
 namespace uniassert
 {
@@ -17,13 +17,11 @@ class UniEnsureThrowTest : public ::testing::Test
 {
 protected:
 	UniEnsureThrowTest()
+		: assert_handler_guard_(&UniEnsureThrowTest::Assertion)
 	{
-		using namespace std::placeholders;
-		g_assertion_failed_handler = std::bind(&UniEnsureThrowTest::Assertion, this, _1, _2, _3, _4);
 	}
 	virtual ~UniEnsureThrowTest() override
 	{
-		g_assertion_failed_handler = nullptr;
 	}
 
 	virtual void SetUp() override
@@ -36,7 +34,7 @@ protected:
 	}
 
 private:
-	void Assertion(char const *assertion, char const *file, char const *function, int line)
+	static void Assertion(char const * assertion, char const * file, char const * function, int line)
 	{
 		UNI_UNUSED(assertion);
 		UNI_UNUSED(file);
@@ -47,8 +45,11 @@ private:
 	}
 
 protected:
-	bool failed_;
+	static bool failed_;
+	const assert_handler_guard assert_handler_guard_;
 };
+
+bool UniEnsureThrowTest::failed_ = false;
 
 TEST_F(UniEnsureThrowTest, ShouldNotFailIfConditionIsTrue)
 {
@@ -121,12 +122,34 @@ TEST_F(UniEnsureThrowTest, ShouldThrowRuntimeErrorIfConditionIsFalse)
 	EXPECT_THROW(func(), ::std::runtime_error);
 }
 
+TEST_F(UniEnsureThrowTest, ShouldThrowRuntimeErrorWithCorrectTextIfConditionIsFalse)
+{
+	const auto func =
+		[]
+		{
+			UNI_ENSURE_THROW(false, "error");
+		};
+
+	try
+	{
+		func();
+	}
+	catch (const ::std::runtime_error &exception)
+	{
+		EXPECT_STREQ("error", exception.what());
+	}
+	catch (...)
+	{
+		FAIL();
+	}
+}
+
 TEST_F(UniEnsureThrowTest, ExtendedVersionShouldNotFailIfConditionIsTrue)
 {
 	const auto func =
 		[]
 		{
-			UNI_ENSURE_THROW(true, "error");
+			UNI_ENSURE_THROW(true, test_exception, "error");
 		};
 
 	try
@@ -145,7 +168,7 @@ TEST_F(UniEnsureThrowTest, ExtendedVersionShouldFailIfConditionIsFalse)
 	const auto func =
 		[]
 		{
-			UNI_ENSURE_THROW(false, "error");
+			UNI_ENSURE_THROW(false, test_exception, "error");
 		};
 
 	try
@@ -164,7 +187,7 @@ TEST_F(UniEnsureThrowTest, ExtendedVersionShouldNotThrowIfConditionIsTrue)
 	const auto func =
 		[]
 		{
-			UNI_ENSURE_THROW(true, "error");
+			UNI_ENSURE_THROW(true, test_exception, "error");
 		};
 
 	EXPECT_NO_THROW(func());
@@ -175,7 +198,7 @@ TEST_F(UniEnsureThrowTest, ExtendedVersionShouldThrowIfConditionIsFalse)
 	const auto func =
 		[]
 		{
-			UNI_ENSURE_THROW(false, "error");
+			UNI_ENSURE_THROW(false, test_exception, "error");
 		};
 
 	EXPECT_ANY_THROW(func());
@@ -186,10 +209,32 @@ TEST_F(UniEnsureThrowTest, ExtendedVersionShouldThrowSelectedExceptionIfConditio
 	const auto func =
 		[]
 		{
-			UNI_ENSURE_THROW(false, TestException, "error");
+			UNI_ENSURE_THROW(false, test_exception, "error");
 		};
 
-	EXPECT_THROW(func(), TestException);
+	EXPECT_THROW(func(), test_exception);
+}
+
+TEST_F(UniEnsureThrowTest, ExtendedVersionShouldThrowSelectedExceptionWithCorrectTextIfConditionIsFalse)
+{
+	const auto func =
+		[]
+		{
+			UNI_ENSURE_THROW(false, test_exception, "error");
+		};
+
+	try
+	{
+		func();
+	}
+	catch (const test_exception &exception)
+	{
+		EXPECT_STREQ("error", exception.what());
+	}
+	catch (...)
+	{
+		FAIL();
+	}
 }
 
 } // namespace test
