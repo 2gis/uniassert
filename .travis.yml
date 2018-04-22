@@ -1,8 +1,10 @@
 language: cpp
-compiler:
-    - gcc
-install:
-    - pip install conan
-    - conan user
+sudo: required
+services:
+    - docker
+
+before_install:
+    - docker pull lasote/conangcc5
+
 script:
-    - conan create uniassert/testing
+    - docker run -v$(pwd):/home/conan/project --rm lasote/conangcc5 conan create ./project uniassert/testing
