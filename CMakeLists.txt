@@ -16,6 +16,8 @@ target_sources(${PROJECT_NAME} INTERFACE
 if (UNIASSERT_TESTS)
     find_package(GTest REQUIRED)
 
+    enable_testing()
+
     set(TEST_PROJECT ${PROJECT_NAME}_test)
 
     add_executable(${TEST_PROJECT}
