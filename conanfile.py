@@ -11,20 +11,20 @@ class UniassertConan(ConanFile):
     build_requires = ('gtest/1.8.0@bincrafters/stable', )
     generators = "cmake"
 
-    cmake = None
-
     def source(self):
         self.run("git clone --depth=1 -b conan --single-branch {} .".format(self.url))
 
     def build(self):
-        self.cmake = CMake(self)
-        args = ['-DUNIASSERT_TESTS=ON', ] if self.develop else None
-        self.cmake.configure(args=args, source_dir=self.source_folder)
-        self.cmake.build()
-        self.cmake.build(target='test')
+        cmake = CMake(self)
+        configure_args = {
+            'args': ['-DUNIASSERT_TESTS=ON', ] if self.develop else None,
+        }
+        cmake.configure(**configure_args)
+        cmake.build()
+        cmake.test()
 
     def package(self):
         self.copy("*.h", dst="include", src="include")
 
-    def package_info(self):
-        pass
+    def package_id(self):
+        self.info.header_only()
