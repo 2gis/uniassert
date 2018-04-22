@@ -12,7 +12,7 @@ class UniassertConan(ConanFile):
     generators = "cmake"
 
     def source(self):
-        self.run("git clone --depth=1 -b conan --single-branch {} .".format(self.url))
+        self.run("git clone --depth=1 -b travis --single-branch {} .".format(self.url))
 
     def build(self):
         cmake = CMake(self)
