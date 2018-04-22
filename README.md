@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/lagner/uniassert.svg?branch=master)](https://travis-ci.org/lagner/uniassert)
+
 # uniassert
 
 The uniassert library is a small collection of useful macros. Most of them are
