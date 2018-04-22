@@ -1,5 +1,7 @@
 project(uniassert)
 
+include (conan)
+
 option(UNIASSERT_TESTS "Build uniassert tests" OFF)
 
 add_library(${PROJECT_NAME} INTERFACE)
