@@ -1,0 +1,8 @@
+language: cpp
+compiler:
+    - gcc
+install:
+    - pip install conan
+    - conan user
+script:
+    - conan create uniassert/testing
