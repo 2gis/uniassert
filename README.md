@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/lagner/uniassert.svg?branch=master)](https://travis-ci.org/lagner/uniassert)
+[![Build Status](https://travis-ci.org/2gis/uniassert.svg?branch=master)](https://travis-ci.org/2gis/uniassert)
 
 # uniassert
 

@@ -5,7 +5,7 @@ class UniassertConan(ConanFile):
     name = "uniassert"
     version = "1.0.0"
     license = "Zlib"
-    url = "https://github.com/lagner/uniassert.git"
+    url = "https://github.com/2gis/uniassert.git"
     description = "The uniassert library is a small collection of useful macros. Most of them are designed for assumption checks"
     settings = "os", "compiler", "build_type", "arch"
     build_requires = ('gtest/1.8.0@bincrafters/stable', )
