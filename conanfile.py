@@ -1,4 +1,5 @@
-from conans import ConanFile, CMake
+import os
+from conans import ConanFile, CMake, tools
 
 
 class UniassertConan(ConanFile):
@@ -11,20 +12,31 @@ class UniassertConan(ConanFile):
     build_requires = ('gtest/1.8.0@bincrafters/stable', )
     generators = "cmake"
 
+    branch = 'master'
+
     def source(self):
-        self.run("git clone --depth=1 -b master --single-branch {} .".format(self.url))
+        url = 'https://github.com/2gis/uniassert/archive/{}.zip'.format(self.branch)
+        tools.download(url, self.branch)
+        tools.unzip(self.branch)
+        os.remove(self.branch)
 
     def build(self):
         cmake = CMake(self)
         configure_args = {
             'args': ['-DUNIASSERT_TESTS=ON', ] if self.develop else None,
+            'source_dir': self.source_subdir(),
         }
         cmake.configure(**configure_args)
         cmake.build()
         cmake.test()
 
     def package(self):
-        self.copy("*.h", dst="include", src="include")
+        src = os.path.join(self.source_subdir(), 'include')
+        self.copy("*.h", dst="include", src=src)
 
     def package_id(self):
         self.info.header_only()
+
+    def source_subdir(self):
+        subdir = '{}-{}'.format(self.name, self.branch)
+        return os.path.join(self.source_folder, subdir)
