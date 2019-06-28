@@ -77,6 +77,14 @@ If `UNI_ENSURE_RETURN` is used in a function with `void` result type,
 
 `UNI_ENSURE_RETURN` uses `UNI_ASSERT` but the expression is evaluated only once.
 
+#### UNI_ENSURE_CONTINUE
+
+`UNI_ENSURE_CONTINUE(condition)`
+
+`UNI_ENSURE_CONTINUE` skips current iteration of outer loop if `condition` is not equal to `true`.
+
+`UNI_ENSURE_CONTINUE` uses `UNI_ASSERT` but the expression is evaluated only once.
+
 ### Configuration
 
 To configure *uniassert* library add additional defines before including
@@ -210,6 +218,12 @@ See `UNI_ENSURE_THROW`.
 `UNI_CHECK_RETURN(expr[, return_code])`
 
 See `UNI_ENSURE_RETURN`.
+
+#### UNI_CHECK_CONTINUE
+
+`UNI_CHECK_CONTINUE(expr)`
+
+See `UNI_ENSURE_CONTINUE`.
 
 ### General macros
 

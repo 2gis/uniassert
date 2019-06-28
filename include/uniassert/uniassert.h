@@ -335,3 +335,22 @@ void assertion_failed(char const * assertion, char const * file, char const * fu
 
 #define UNI_CHECK_RETURN(...) \
 	PRIVATE_UNI_EXPAND(PRIVATE_UNI_CHECK_RETURN_CHOOSER(__VA_ARGS__)(__VA_ARGS__))
+
+// UNI_ENSURE_CONTINUE(expr)
+
+#define UNI_ENSURE_CONTINUE(expr) \
+	if (!(expr)) { \
+		UNI_ASSERT(false && #expr); \
+		continue; \
+	} \
+	PRIVATE_UNI_ABEGIN \
+	PRIVATE_UNI_AEND
+
+// UNI_CHECK_CONTINUE(expr)
+
+#define UNI_CHECK_CONTINUE(expr) \
+	if (!(expr)) { \
+		continue; \
+	} \
+	PRIVATE_UNI_ABEGIN \
+	PRIVATE_UNI_AEND
