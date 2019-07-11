@@ -8,7 +8,7 @@ endif()
 option(UNIASSERT_TESTS "Build uniassert tests" OFF)
 
 set(SRC_LIST
-    uniassert/uniassert.h
+    include/uniassert/uniassert.h
 )
 
 add_library(${PROJECT_NAME} INTERFACE)
