@@ -7,8 +7,27 @@ endif()
 
 option(UNIASSERT_TESTS "Build uniassert tests" OFF)
 
+set(SRC_LIST
+    uniassert/uniassert.h
+)
+
 add_library(${PROJECT_NAME} INTERFACE)
+add_library(${PROJECT_NAME}_IDE OBJECT ${SRC_LIST})
 add_library(2gis::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+
+set_target_properties(${PROJECT_NAME}_IDE PROPERTIES LINKER_LANGUAGE CXX)
+
+
+option(UNI_FORCE_ASSERTS "Enable uniassert force asserts" OFF)
+
+message("UNI_FORCE_ASSERTS is ${UNI_FORCE_ASSERTS}")
+if (UNI_FORCE_ASSERTS)
+    target_compile_definitions(uniassert
+        INTERFACE
+            UNI_FORCE_ASSERTS
+    )
+endif(UNI_FORCE_ASSERTS)
+
 
 target_include_directories(${PROJECT_NAME} INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -60,11 +79,9 @@ if (UNIASSERT_TESTS)
         PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}
     )
-    set_target_properties(${TEST_PROJECT}
-        PROPERTIES
-            CXX_STANDARD 14
-            CXX_STANDARD_REQUIRED YES
-            CXX_EXTENSIONS NO
-    )
+    target_compile_features(${TEST_PROJECT}
+        PRIVATE
+            cxx_std_14)
+
     add_test(NAME ${PROJECT_NAME} COMMAND ${TEST_PROJECT})
 endif (UNIASSERT_TESTS)
