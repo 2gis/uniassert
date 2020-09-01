@@ -18,6 +18,17 @@ add_library(2gis::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 set_target_properties(${PROJECT_NAME}_IDE PROPERTIES LINKER_LANGUAGE CXX)
 
 
+option(UNI_ENABLE_DYNAMIC_ASSERT_HANDLER "Enable dynamic assert handler" OFF)
+
+message("UNI_ENABLE_DYNAMIC_ASSERT_HANDLER is ${UNI_ENABLE_DYNAMIC_ASSERT_HANDLER}")
+if (UNI_ENABLE_DYNAMIC_ASSERT_HANDLER)
+    target_compile_definitions(uniassert
+        INTERFACE
+            UNI_ENABLE_DYNAMIC_ASSERT_HANDLER
+    )
+endif(UNI_ENABLE_DYNAMIC_ASSERT_HANDLER)
+
+
 option(UNI_FORCE_ASSERTS "Enable uniassert force asserts" OFF)
 
 message("UNI_FORCE_ASSERTS is ${UNI_FORCE_ASSERTS}")
