@@ -354,3 +354,22 @@ void assertion_failed(char const * assertion, char const * file, char const * fu
 	} \
 	PRIVATE_UNI_ABEGIN \
 	PRIVATE_UNI_AEND
+
+// UNI_ENSURE_BREAK(expr)
+
+#define UNI_ENSURE_BREAK(expr) \
+	if (!(expr)) { \
+		UNI_ASSERT(false && #expr); \
+		break; \
+	} \
+	PRIVATE_UNI_ABEGIN \
+	PRIVATE_UNI_AEND
+
+// UNI_CHECK_BREAK(expr)
+
+#define UNI_CHECK_BREAK(expr) \
+	if (!(expr)) { \
+		break; \
+	} \
+	PRIVATE_UNI_ABEGIN \
+	PRIVATE_UNI_AEND
