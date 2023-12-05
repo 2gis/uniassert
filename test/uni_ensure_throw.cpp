@@ -100,6 +100,20 @@ TEST_F(UniEnsureThrowTest, ShouldNotThrowIfConditionIsTrue)
 	EXPECT_NO_THROW(func());
 }
 
+TEST_F(UniEnsureThrowTest, ShouldNotEvaluateMessageIfConditionIsTrue)
+{
+	auto message = "1error";
+	const auto func =
+		[&message]
+		{
+			UNI_ENSURE_THROW(true, ++message);
+		};
+
+	func();
+
+	EXPECT_STREQ("1error", message);
+}
+
 TEST_F(UniEnsureThrowTest, ShouldThrowIfConditionIsFalse)
 {
 	const auto func =
@@ -142,6 +156,20 @@ TEST_F(UniEnsureThrowTest, ShouldThrowRuntimeErrorWithCorrectTextIfConditionIsFa
 	{
 		FAIL();
 	}
+}
+
+TEST_F(UniEnsureThrowTest, ShouldEvaluateMessageOnceIfConditionIsFalse)
+{
+	auto message = "1error";
+	const auto func =
+		[&message]
+		{
+			UNI_ENSURE_THROW(false, ++message);
+		};
+
+	EXPECT_ANY_THROW(func());
+
+	EXPECT_STREQ("error", message);
 }
 
 TEST_F(UniEnsureThrowTest, ExtendedVersionShouldNotFailIfConditionIsTrue)
@@ -193,6 +221,20 @@ TEST_F(UniEnsureThrowTest, ExtendedVersionShouldNotThrowIfConditionIsTrue)
 	EXPECT_NO_THROW(func());
 }
 
+TEST_F(UniEnsureThrowTest, ExtendedVersionShouldNotEvaluateMessageIfConditionIsTrue)
+{
+	auto message = "1error";
+	const auto func =
+		[&message]
+		{
+			UNI_ENSURE_THROW(true, test_exception, ++message);
+		};
+
+	func();
+
+	EXPECT_STREQ("1error", message);
+}
+
 TEST_F(UniEnsureThrowTest, ExtendedVersionShouldThrowIfConditionIsFalse)
 {
 	const auto func =
@@ -235,6 +277,20 @@ TEST_F(UniEnsureThrowTest, ExtendedVersionShouldThrowSelectedExceptionWithCorrec
 	{
 		FAIL();
 	}
+}
+
+TEST_F(UniEnsureThrowTest, ExtendedVersionShouldEvaluateMessageOnceIfConditionIsFalse)
+{
+	auto message = "1error";
+	const auto func =
+		[&message]
+		{
+			UNI_ENSURE_THROW(false, test_exception, ++message);
+		};
+
+	EXPECT_ANY_THROW(func());
+
+	EXPECT_STREQ("error", message);
 }
 
 } // namespace test

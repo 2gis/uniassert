@@ -147,6 +147,21 @@ TEST_F(UniCheckReturnTest, ExtendedVersionShouldNotReturnIfConditionIsTrue)
 	EXPECT_FALSE(func());
 }
 
+TEST_F(UniCheckReturnTest, ExtendedVersionShouldNotEvaluateValueIfConditionIsTrue)
+{
+	int counter = 0;
+	const auto func =
+		[&counter]
+		{
+			UNI_CHECK_RETURN(true, ++counter);
+			return -1;
+		};
+
+	func();
+
+	EXPECT_EQ(counter, 0);
+}
+
 TEST_F(UniCheckReturnTest, ExtendedVersionShouldReturnIfConditionIsFalse)
 {
 	const auto func =
@@ -157,6 +172,21 @@ TEST_F(UniCheckReturnTest, ExtendedVersionShouldReturnIfConditionIsFalse)
 		};
 
 	EXPECT_TRUE(func());
+}
+
+TEST_F(UniCheckReturnTest, ExtendedVersionShouldEvaluateValueOnceIfConditionIsFalse)
+{
+	int counter = 0;
+	const auto func =
+		[&counter]
+		{
+			UNI_CHECK_RETURN(false, ++counter);
+			return -1;
+		};
+
+	func();
+
+	EXPECT_EQ(counter, 1);
 }
 
 } // namespace test
