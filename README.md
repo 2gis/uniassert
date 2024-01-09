@@ -67,6 +67,8 @@ be constructable from the `message` type.
 
 `UNI_ENSURE_THROW` uses `UNI_ASSERT` but the expression is evaluated only once.
 
+`message` is evaluated only once if condition is false, and not at all if true.
+
 #### UNI_ENSURE_RETURN
 
 `UNI_ENSURE_RETURN(condition[, return_code])`
@@ -76,6 +78,8 @@ If `UNI_ENSURE_RETURN` is used in a function with `void` result type,
 `return_code` must be omitted.
 
 `UNI_ENSURE_RETURN` uses `UNI_ASSERT` but the expression is evaluated only once.
+
+`return_code` is evaluated only once if condition is false, and not at all if true.
 
 #### UNI_ENSURE_CONTINUE
 
